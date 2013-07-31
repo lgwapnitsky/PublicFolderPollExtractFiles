@@ -12,13 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B6DD87
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
+		SccNumberOfProjects = 1
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://teamsuite01:8080/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = PublicFolderPollExtractFiles\\PublicFolderPollExtractFiles.csproj
-		SccProjectName1 = PublicFolderPollExtractFiles
-		SccLocalPath1 = PublicFolderPollExtractFiles
+		SccProjectUniqueName0 = PublicFolderPollExtractFiles\\PublicFolderPollExtractFiles.csproj
+		SccProjectName0 = PublicFolderPollExtractFiles
+		SccAuxPath0 = http://teamsuite01:8080
+		SccLocalPath0 = PublicFolderPollExtractFiles
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

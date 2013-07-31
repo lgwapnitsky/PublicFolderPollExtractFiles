@@ -13,6 +13,14 @@ namespace PublicFolderPollExtractFiles
 		private static ExchangeService service;
 		private static CLIArgs parsed;
 
+		private enum ExitCode : int
+		{
+			Success = 0,
+			InvalidArguments = 1,
+			DirectoryNotFound = 2,
+			UnknownError = 4
+		}
+
 		private static void Main ( string[] args )
 		{
 			try
@@ -25,12 +33,14 @@ namespace PublicFolderPollExtractFiles
 				}
 				else if (parsed.ExtractPath == null || parsed.PublicFolderPath == null)
 				{
+					Environment.ExitCode = (int)ExitCode.InvalidArguments;
 					throw new ArgumentException ( "You must specify command line arguments\n" );
 				}
 				else
 				{
 					if (!(Directory.Exists ( parsed.ExtractPath )))
 					{
+						Environment.ExitCode = (int)ExitCode.DirectoryNotFound;
 						throw new DirectoryNotFoundException ();
 					}
 					ReadPublicFolders ();
@@ -45,6 +55,15 @@ namespace PublicFolderPollExtractFiles
 				{
 					Console.WriteLine ( PowerArgs.ArgUsage.GetUsage<CLIArgs> () );
 				}
+				else
+				{
+					Environment.ExitCode = (int)ExitCode.UnknownError;
+				}
+			}
+
+			finally
+			{
+				Console.WriteLine ( "{0} ({1})", (ExitCode)Environment.ExitCode, Environment.ExitCode );
 			}
 			//Console.ReadLine ();
 		}
@@ -70,7 +89,7 @@ namespace PublicFolderPollExtractFiles
 				{
 					case "EmailMessage":
 						EmailMessage msg = i as EmailMessage;
-						Console.WriteLine ( msg.Subject );
+						Console.WriteLine ( "{0} - {1}", msg.Subject, msg.DateTimeReceived );
 						switch (msg.IsRead)
 						{
 							case true:
@@ -89,8 +108,10 @@ namespace PublicFolderPollExtractFiles
 										string filepath = parsed.ExtractPath + "\\";
 										string filename = filepath + fa.Name;
 
-										using (FileStream fs = new FileStream ( filename, FileMode.OpenOrCreate, FileAccess.ReadWrite ))
+										FileStream fs = null;
+										try
 										{
+											fs = new FileStream ( filename, FileMode.OpenOrCreate, FileAccess.ReadWrite );
 											fa.Load ( fs );
 
 											if (Regex.IsMatch ( Path.GetExtension ( filename ), @"\.zip$", RegexOptions.IgnoreCase ))
@@ -103,12 +124,18 @@ namespace PublicFolderPollExtractFiles
 															zEntry.Extract ( filepath, ExtractExistingFileAction.OverwriteSilently );
 													}
 												}
-												fs.Close ();
-												File.Delete ( filename );
 											}
-											fs.Dispose ();
+										}
+										finally
+										{
+											if (fs != null)
+												fs.Dispose ();
+
+											if (Regex.IsMatch ( Path.GetExtension ( filename ), @"\.zip$", RegexOptions.IgnoreCase )) 
+												File.Delete ( filename );
 										}
 									}
+
 								msg.IsRead = true;
 								msg.Update ( ConflictResolutionMode.AutoResolve );
 
