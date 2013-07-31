@@ -65,7 +65,6 @@ namespace PublicFolderPollExtractFiles
 			{
 				Console.WriteLine ( "{0} ({1})", (ExitCode)Environment.ExitCode, Environment.ExitCode );
 			}
-			//Console.ReadLine ();
 		}
 
 		private static void ReadPublicFolders ()
@@ -114,7 +113,7 @@ namespace PublicFolderPollExtractFiles
 											fs = new FileStream ( filename, FileMode.OpenOrCreate, FileAccess.ReadWrite );
 											fa.Load ( fs );
 
-											if (Regex.IsMatch ( Path.GetExtension ( filename ), @"\.zip$", RegexOptions.IgnoreCase ))
+											if (isZip ( filename ))
 											{
 												using (ZipFile zipfile = Ionic.Zip.ZipFile.Read ( filename ))
 												{
@@ -131,7 +130,7 @@ namespace PublicFolderPollExtractFiles
 											if (fs != null)
 												fs.Dispose ();
 
-											if (Regex.IsMatch ( Path.GetExtension ( filename ), @"\.zip$", RegexOptions.IgnoreCase )) 
+											if (isZip ( filename ))
 												File.Delete ( filename );
 										}
 									}
@@ -173,6 +172,11 @@ namespace PublicFolderPollExtractFiles
 			}
 
 			return parent != null ? parent.Id : null;
+		}
+
+		private static bool isZip ( string filename )
+		{
+			return Regex.IsMatch ( Path.GetExtension ( filename ), @"\.zip$", RegexOptions.IgnoreCase );
 		}
 	}
 }
